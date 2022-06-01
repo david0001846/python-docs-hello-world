@@ -1,0 +1,295 @@
+{
+ "properties": {
+  "displayName": "Deploy NSG Rules",
+  "policyType": "Custom",
+  "mode": "Indexed",
+  "metadata": {
+   "category": "Network",
+   "createdBy": "ae779230-25e2-41c3-985b-9f53723e7b48",
+   "createdOn": "2022-05-18T09:54:37.1144534Z",
+   "updatedBy": null,
+   "updatedOn": null
+  },
+  "parameters": {
+   "access": {
+    "type": "String",
+    "metadata": {
+     "displayName": "access",
+     "description": "The network traffic is allowed or denied. - Allow or Deny"
+    }
+   },
+   "destinationAddressPrefix": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "destinationAddressPrefix",
+     "description": "The destination address prefix. CIDR or destination IP range. Asterisk '*' can also be used to match all source IPs. Default tags such as 'VirtualNetwork', 'AzureLoadBalancer' and 'Internet' can also be used."
+    }
+   },
+   "destinationPortRange": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "destinationPortRange",
+     "description": "The destination port or range. Integer or range between 0 and 65535. Asterisk '*' can also be used to match all ports."
+    }
+   },
+   "direction": {
+    "type": "String",
+    "metadata": {
+     "displayName": "direction",
+     "description": "The direction of the rule. The direction specifies if rule will be evaluated on incoming or outgoing traffic. - Inbound or Outbound"
+    }
+   },
+   "effect": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Effect",
+     "description": "The effect determines what happens when the policy rule is evaluated to match"
+    },
+    "allowedValues": [
+     "deployIfNotExists",
+     "disabled"
+    ],
+    "defaultValue": "deployIfNotExists"
+   },
+   "priority": {
+    "type": "Integer",
+    "metadata": {
+     "displayName": "priority",
+     "description": "The priority of the rule. The value can be between 100 and 4096. The priority number must be unique for each rule in the collection. The lower the priority number, the higher the priority of the rule."
+    }
+   },
+   "protocol": {
+    "type": "String",
+    "metadata": {
+     "displayName": "protocol",
+     "description": "Network protocol this rule applies to. - Tcp, Udp, Icmp, Esp, *, Ah"
+    }
+   },
+   "ruledescription": {
+    "type": "String",
+    "metadata": {
+     "displayName": "description",
+     "description": "The description of the rule."
+    }
+   },
+   "rulename": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Rule Name",
+     "description": "This is the name of the security rule itself."
+    }
+   },
+   "sourceAddressPrefix": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "sourceAddressPrefix",
+     "description": "The CIDR or source IP range. Asterisk '*' can also be used to match all source IPs. Default tags such as 'VirtualNetwork', 'AzureLoadBalancer' and 'Internet' can also be used. If this is an ingress rule, specifies where network traffic originates from."
+    }
+   },
+   "sourcePortRange": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "sourcePortRange",
+     "description": "The source port or range. Integer or range between 0 and 65535. Asterisk '*' can also be used to match all ports."
+    }
+   }
+  },
+  "policyRule": {
+   "if": {
+    "equals": "Microsoft.Network/networkSecurityGroups",
+    "field": "type"
+   },
+   "then": {
+    "details": {
+     "deployment": {
+      "properties": {
+       "mode": "incremental",
+       "parameters": {
+        "access": {
+         "value": "[parameters('access')]"
+        },
+        "description": {
+         "value": "[parameters('ruledescription')]"
+        },
+        "destinationAddressPrefix": {
+         "value": "[parameters('destinationAddressPrefix')]"
+        },
+        "destinationPortRange": {
+         "value": "[parameters('destinationPortRange')]"
+        },
+        "direction": {
+         "value": "[parameters('direction')]"
+        },
+        "nsgName": {
+         "value": "[field('name')]"
+        },
+        "priority": {
+         "value": "[parameters('priority')]"
+        },
+        "protocol": {
+         "value": "[parameters('protocol')]"
+        },
+        "rulename": {
+         "value": "[parameters('rulename')]"
+        },
+        "sourceAddressPrefix": {
+         "value": "[parameters('sourceAddressPrefix')]"
+        },
+        "sourcePortRange": {
+         "value": "[parameters('sourcePortRange')]"
+        }
+       },
+       "template": {
+        "$schema": "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+         "access": {
+          "type": "String"
+         },
+         "description": {
+          "type": "String"
+         },
+         "destinationAddressPrefix": {
+          "type": "Array"
+         },
+         "destinationPortRange": {
+          "type": "Array"
+         },
+         "direction": {
+          "type": "String"
+         },
+         "nsgName": {
+          "type": "string"
+         },
+         "priority": {
+          "type": "Integer"
+         },
+         "protocol": {
+          "type": "String"
+         },
+         "rulename": {
+          "type": "String"
+         },
+         "sourceAddressPrefix": {
+          "type": "Array"
+         },
+         "sourcePortRange": {
+          "type": "Array"
+         }
+        },
+        "resources": [
+         {
+          "apiVersion": "2019-11-01",
+          "properties": {
+           "access": "[parameters('access')]",
+           "description": "[parameters('description')]",
+           "destinationAddressPrefix": "[if(equals(length(parameters('destinationAddressPrefix')),1),parameters('destinationAddressPrefix'),json('null'))]",
+           "destinationAddressPrefixs": "[if(equals(length(parameters('destinationAddressPrefix')),1),json('null'),parameters('destinationAddressPrefix'))]",
+           "destinationPortRange": "[if(equals(length(parameters('destinationPortRange')),1),parameters('destinationPortRange'),json('null'))]",
+           "destinationPortRanges": "[if(equals(length(parameters('destinationPortRange')),1),json('null'),parameters('destinationPortRange'))]",
+           "direction": "[parameters('direction')]",
+           "priority": "[parameters('priority')]",
+           "protocol": "[parameters('protocol')]",
+           "sourceAddressPrefix": "[if(equals(length(parameters('sourceAddressPrefix')),1),parameters('sourceAddressPrefix'),json('null'))]",
+           "sourceAddressPrefixs": "[if(equals(length(parameters('sourceAddressPrefix')),1),json('null'),parameters('sourceAddressPrefix'))]",
+           "sourcePortRange": "[if(equals(length(parameters('sourcePortRange')),1),parameters('sourcePortRange'),json('null'))]",
+           "sourcePortRanges": "[if(equals(length(parameters('sourcePortRange')),1),json('null'),parameters('sourcePortRange'))]"
+          },
+          "rulename": "[concat(parameters('nsgName'),'/',parameters('rulename'))]",
+          "type": "Microsoft.Network/networkSecurityGroups/securityRules"
+         }
+        ]
+       }
+      }
+     },
+     "existenceCondition": {
+      "count": {
+       "field": "Microsoft.Network/networkSecurityGroups/securityRules[*]",
+       "where": {
+        "allOf": [
+         {
+          "equals": "[parameters('rulename')]",
+          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].name"
+         },
+         {
+          "equals": "[parameters('protocol')]",
+          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].protocol"
+         },
+         {
+          "anyOf": [
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].sourcePortRange'), parameters('sourcePortRange'))]"
+           },
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].sourcePortRanges'), parameters('sourcePortRange'))]"
+           }
+          ]
+         },
+         {
+          "anyOf": [
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].destinationPortRange'), parameters('destinationPortRange'))]"
+           },
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].destinationPortRanges'), parameters('destinationPortRange'))]"
+           }
+          ]
+         },
+         {
+          "anyOf": [
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefix'), parameters('sourceAddressPrefix'))]"
+           },
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefixes'), parameters('sourceAddressPrefix'))]"
+           }
+          ]
+         },
+         {
+          "anyOf": [
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].destinationAddressPrefix'), parameters('destinationAddressPrefix'))]"
+           },
+           {
+            "equals": true,
+            "value": "[equals(field('Microsoft.Network/networkSecurityGroups/securityRules[*].destinationAddressPrefixes'), parameters('destinationAddressPrefix'))]"
+           }
+          ]
+         },
+         {
+          "equals": "[parameters('access')]",
+          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].access"
+         },
+         {
+          "equals": "[parameters('priority')]",
+          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].priority"
+         },
+         {
+          "equals": "[parameters('direction')]",
+          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].direction"
+         }
+        ]
+       }
+      },
+      "notEquals": 0
+     },
+     "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+     "roleDefinitionIds": [
+      "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+     ]
+    },
+    "effect": "[parameters('effect')]"
+   }
+  }
+ },
+ "id": "/providers/Microsoft.Management/managementGroups/connectivity/providers/Microsoft.Authorization/policyDefinitions/0574ba0d-84bb-49d2-b293-97ccb850ee56",
+ "type": "Microsoft.Authorization/policyDefinitions",
+ "name": "0574ba0d-84bb-49d2-b293-97ccb850ee56"
+}
